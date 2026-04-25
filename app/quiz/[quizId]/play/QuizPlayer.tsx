@@ -2,9 +2,16 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import type { Quiz } from "@/lib/quizzes";
+import { buildFlagQuestions, getQuestionsPerRound, type Quiz, type Question } from "@/lib/quizzes";
 
 const OPTION_LABELS = ["A", "B", "C", "D"];
+
+function resolveQuestions(quiz: Quiz): Question[] {
+  if (quiz.flagPool && quiz.flagPool.length > 0) {
+    return buildFlagQuestions(quiz.flagPool, getQuestionsPerRound(quiz));
+  }
+  return quiz.questions;
+}
 
 export default function QuizPlayer({
   quiz,
@@ -14,15 +21,19 @@ export default function QuizPlayer({
   sessionId: string;
 }) {
   const router = useRouter();
+  const [questions] = useState<Question[]>(() => resolveQuestions(quiz));
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
   const [score, setScore] = useState(0);
   const [answered, setAnswered] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
-  const question = quiz.questions[currentIndex];
-  const isLast = currentIndex === quiz.questions.length - 1;
-  const progress = ((currentIndex + 1) / quiz.questions.length) * 100;
+  const question = questions[currentIndex];
+  const total = questions.length;
+  const isLast = currentIndex === total - 1;
+  const progress = ((currentIndex + 1) / total) * 100;
+
+  const isFlagQuiz = !!quiz.flagPool?.length;
 
   function handleSelect(optionIndex: number) {
     if (answered) return;
@@ -34,17 +45,20 @@ export default function QuizPlayer({
   }
 
   async function handleNext() {
+    const newScore = selectedOption === question.correctAnswerIndex ? score + 1 : score;
+
     if (isLast) {
       setSubmitting(true);
-      const finalScore = selectedOption === question.correctAnswerIndex ? score : score;
       try {
         await fetch(`/api/sessions/${sessionId}`, {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ score: answered && selectedOption === question.correctAnswerIndex ? score : score }),
+          body: JSON.stringify({ score: newScore }),
         });
       } finally {
-        router.push(`/quiz/${quiz.id}/results?sessionId=${sessionId}&score=${score}&total=${quiz.questions.length}`);
+        router.push(
+          `/quiz/${quiz.id}/results?sessionId=${sessionId}&score=${newScore}&total=${total}`
+        );
       }
       return;
     }
@@ -60,10 +74,9 @@ export default function QuizPlayer({
         <div className="max-w-2xl mx-auto flex items-center justify-between">
           <span className="text-sm font-bold shimmer-text">{quiz.name}</span>
           <span className="text-sm text-purple-400">
-            {currentIndex + 1} / {quiz.questions.length}
+            {currentIndex + 1} / {total}
           </span>
         </div>
-        {/* Progress bar */}
         <div className="max-w-2xl mx-auto mt-3 h-1.5 bg-purple-900/40 rounded-full overflow-hidden">
           <div
             className="h-full bg-purple-500 rounded-full transition-all duration-500"
@@ -79,13 +92,18 @@ export default function QuizPlayer({
             {question.question}
           </h2>
 
-          {/* Image */}
-          <div className="rounded-2xl overflow-hidden mb-8 border border-purple-800/40">
+          {/* Image — letterboxed for flags, cover for other quizzes */}
+          <div
+            className={`rounded-2xl overflow-hidden mb-8 border border-purple-800/40 flex items-center justify-center ${
+              isFlagQuiz ? "bg-white" : "bg-purple-900/20"
+            }`}
+            style={{ minHeight: isFlagQuiz ? "180px" : "240px" }}
+          >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={question.imageUrl}
               alt="Quiz question"
-              className="w-full object-cover max-h-72"
+              className={isFlagQuiz ? "max-h-44 w-auto drop-shadow-lg" : "w-full object-cover max-h-72"}
             />
           </div>
 
@@ -94,18 +112,17 @@ export default function QuizPlayer({
             {question.options.map((option, i) => {
               const isSelected = selectedOption === i;
               const isCorrect = i === question.correctAnswerIndex;
-              let optionStyle =
+              let cls =
                 "glass-card cursor-pointer rounded-xl p-4 flex items-center gap-3 transition-all duration-200 border";
 
               if (!answered) {
-                optionStyle +=
-                  " hover:border-purple-400 hover:bg-purple-900/40 border-purple-800/30";
+                cls += " hover:border-purple-400 hover:bg-purple-900/40 border-purple-800/30";
               } else if (isCorrect) {
-                optionStyle += " border-emerald-500 bg-emerald-900/30";
+                cls += " border-emerald-500 bg-emerald-900/30";
               } else if (isSelected && !isCorrect) {
-                optionStyle += " border-red-500 bg-red-900/30";
+                cls += " border-red-500 bg-red-900/30";
               } else {
-                optionStyle += " border-purple-800/20 opacity-50";
+                cls += " border-purple-800/20 opacity-40";
               }
 
               return (
@@ -113,7 +130,7 @@ export default function QuizPlayer({
                   key={i}
                   onClick={() => handleSelect(i)}
                   disabled={answered}
-                  className={optionStyle}
+                  className={cls}
                 >
                   <span
                     className={`w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold shrink-0 ${
@@ -124,11 +141,7 @@ export default function QuizPlayer({
                         : "bg-purple-800/60 text-purple-300"
                     }`}
                   >
-                    {answered && isCorrect
-                      ? "✓"
-                      : answered && isSelected && !isCorrect
-                      ? "✗"
-                      : OPTION_LABELS[i]}
+                    {answered && isCorrect ? "✓" : answered && isSelected ? "✗" : OPTION_LABELS[i]}
                   </span>
                   <span className="text-sm text-purple-100">{option}</span>
                 </button>
@@ -136,7 +149,6 @@ export default function QuizPlayer({
             })}
           </div>
 
-          {/* Score tally */}
           {answered && (
             <div className="text-center mb-6">
               <p
@@ -151,7 +163,7 @@ export default function QuizPlayer({
                   : `✗ The answer was: ${question.options[question.correctAnswerIndex]}`}
               </p>
               <p className="text-xs text-purple-400/60 mt-1">
-                Score: {score} / {currentIndex + 1}
+                Score: {selectedOption === question.correctAnswerIndex ? score + 1 : score} / {currentIndex + 1}
               </p>
             </div>
           )}
@@ -162,11 +174,7 @@ export default function QuizPlayer({
               disabled={submitting}
               className="w-full py-3 rounded-xl font-bold text-white bg-purple-600 hover:bg-purple-500 disabled:opacity-40 transition-all duration-200 hover:scale-[1.01]"
             >
-              {submitting
-                ? "Saving..."
-                : isLast
-                ? "See Results →"
-                : "Next Question →"}
+              {submitting ? "Saving..." : isLast ? "See Results →" : "Next Question →"}
             </button>
           )}
         </div>

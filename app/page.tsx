@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { getAllQuizzes, type Quiz } from "@/lib/quizzes";
+import { getAllQuizzes, getQuestionsPerRound, type Quiz } from "@/lib/quizzes";
 import { prisma } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
@@ -119,7 +119,7 @@ function QuizCard({ quiz }: { quiz: Quiz }) {
         <h3 className="text-lg font-bold text-white mb-1">{quiz.name}</h3>
         <p className="text-sm text-purple-300/60 mb-1">{quiz.description}</p>
         <p className="text-xs text-purple-400/50 mb-4">
-          {quiz.questions.length} questions
+          {getQuestionsPerRound(quiz)} questions
         </p>
 
         <div className="flex gap-2">

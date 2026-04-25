@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { getQuiz } from "@/lib/quizzes";
+import { getQuiz, getQuestionsPerRound } from "@/lib/quizzes";
 import StartQuizForm from "./StartQuizForm";
 
 export default async function QuizStartPage({
@@ -41,7 +41,7 @@ export default async function QuizStartPage({
                     {quiz.category}
                   </span>
                   <h1 className="text-2xl font-black text-white mt-2">{quiz.name}</h1>
-                  <p className="text-sm text-purple-300/60">{quiz.questions.length} questions</p>
+                  <p className="text-sm text-purple-300/60">{getQuestionsPerRound(quiz)} questions</p>
                 </div>
               </div>
             </div>

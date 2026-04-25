@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
-import { getQuiz } from "@/lib/quizzes";
+import { getQuiz, getQuestionsPerRound } from "@/lib/quizzes";
 
 export async function POST(request: NextRequest) {
   const body = await request.json();
@@ -22,7 +22,7 @@ export async function POST(request: NextRequest) {
     data: {
       playerName: playerName.trim(),
       quizId,
-      totalQuestions: quiz.questions.length,
+      totalQuestions: getQuestionsPerRound(quiz),
       startedAt: new Date(),
     },
   });
