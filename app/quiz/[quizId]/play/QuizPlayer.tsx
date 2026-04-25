@@ -45,7 +45,7 @@ export default function QuizPlayer({
   }
 
   async function handleNext() {
-    const newScore = selectedOption === question.correctAnswerIndex ? score + 1 : score;
+    const newScore = score;
 
     if (isLast) {
       setSubmitting(true);
@@ -163,7 +163,7 @@ export default function QuizPlayer({
                   : `✗ The answer was: ${question.options[question.correctAnswerIndex]}`}
               </p>
               <p className="text-xs text-purple-400/60 mt-1">
-                Score: {selectedOption === question.correctAnswerIndex ? score + 1 : score} / {currentIndex + 1}
+                Score: {score} / {currentIndex + 1}
               </p>
             </div>
           )}
