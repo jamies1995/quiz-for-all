@@ -1,8 +1,10 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/db";
+import { getPrisma } from "@/lib/db";
+
+export const dynamic = "force-dynamic";
 
 export async function GET() {
-  const sessions = await prisma.quizSession.findMany({
+  const sessions = await getPrisma().quizSession.findMany({
     where: { completedAt: { not: null } },
     orderBy: [{ percentage: "desc" }, { completedAt: "asc" }],
     take: 50,

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getQuiz } from "@/lib/quizzes";
-import { prisma } from "@/lib/db";
+import { getPrisma } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
 
@@ -24,7 +24,7 @@ export default async function ResultsPage({
 
   let playerName = "Player";
   if (sessionId) {
-    const session = await prisma.quizSession.findUnique({
+    const session = await getPrisma().quizSession.findUnique({
       where: { id: sessionId },
       select: { playerName: true },
     });

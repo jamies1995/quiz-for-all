@@ -1,11 +1,11 @@
 import Link from "next/link";
 import { getAllQuizzes, getQuestionsPerRound, type Quiz } from "@/lib/quizzes";
-import { prisma } from "@/lib/db";
+import { getPrisma } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
 
 async function getStats() {
-  const totalPlayers = await prisma.quizSession.count({
+  const totalPlayers = await getPrisma().quizSession.count({
     where: { completedAt: { not: null } },
   });
   const totalQuizzes = getAllQuizzes().length;

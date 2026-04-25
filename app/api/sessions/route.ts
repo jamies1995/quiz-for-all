@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/db";
+import { getPrisma } from "@/lib/db";
 import { getQuiz, getQuestionsPerRound } from "@/lib/quizzes";
+
+export const dynamic = "force-dynamic";
 
 export async function POST(request: NextRequest) {
   const body = await request.json();
@@ -18,7 +20,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Quiz not found" }, { status: 404 });
   }
 
-  const session = await prisma.quizSession.create({
+  const session = await getPrisma().quizSession.create({
     data: {
       playerName: playerName.trim(),
       quizId,

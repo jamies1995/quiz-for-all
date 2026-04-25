@@ -1,12 +1,12 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { prisma } from "@/lib/db";
+import { getPrisma } from "@/lib/db";
 import { getQuiz } from "@/lib/quizzes";
 
 export const dynamic = "force-dynamic";
 
 async function getQuizLeaderboard(quizId: string) {
-  return prisma.quizSession.findMany({
+  return getPrisma().quizSession.findMany({
     where: { quizId, completedAt: { not: null } },
     orderBy: [{ percentage: "desc" }, { completedAt: "asc" }],
     take: 50,

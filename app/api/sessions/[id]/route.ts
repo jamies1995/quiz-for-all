@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/db";
+import { getPrisma } from "@/lib/db";
+
+export const dynamic = "force-dynamic";
 
 export async function PATCH(
   request: NextRequest,
@@ -13,7 +15,7 @@ export async function PATCH(
     return NextResponse.json({ error: "score is required" }, { status: 400 });
   }
 
-  const existing = await prisma.quizSession.findUnique({ where: { id } });
+  const existing = await getPrisma().quizSession.findUnique({ where: { id } });
   if (!existing) {
     return NextResponse.json({ error: "Session not found" }, { status: 404 });
   }
@@ -23,7 +25,7 @@ export async function PATCH(
       ? (score / existing.totalQuestions) * 100
       : 0;
 
-  const session = await prisma.quizSession.update({
+  const session = await getPrisma().quizSession.update({
     where: { id },
     data: {
       score,
