@@ -1,0 +1,20 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model QuizSession {
+  id             String    @id @default(cuid())
+  playerName     String
+  quizId         String
+  score          Int       @default(0)
+  totalQuestions Int
+  percentage     Float     @default(0)
+  startedAt      DateTime
+  completedAt    DateTime?
+  createdAt      DateTime  @default(now())
+}
