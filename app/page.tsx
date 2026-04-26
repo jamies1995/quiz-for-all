@@ -1,20 +1,8 @@
 import Link from "next/link";
 import { getAllQuizzes, getQuestionsPerRound, type Quiz } from "@/lib/quizzes";
-import { getPrisma } from "@/lib/db";
-
-export const dynamic = "force-dynamic";
-
-async function getStats() {
-  const totalPlayers = await getPrisma().quizSession.count({
-    where: { completedAt: { not: null } },
-  });
-  const totalQuizzes = getAllQuizzes().length;
-  return { totalPlayers, totalQuizzes };
-}
-
 export default async function HomePage() {
   const quizzes = getAllQuizzes();
-  const stats = await getStats();
+  const totalQuizzes = quizzes.length;
 
   return (
     <div className="min-h-screen" style={{ background: "var(--bg-primary)" }}>
@@ -51,22 +39,13 @@ export default async function HomePage() {
           </p>
 
           {/* Stats */}
-          <div className="flex justify-center gap-12 mb-4">
+          <div className="flex justify-center mb-4">
             <div className="text-center">
               <div className="text-3xl font-black text-amber-400">
-                {stats.totalQuizzes}
+                {totalQuizzes}
               </div>
               <div className="text-sm text-purple-300/60 uppercase tracking-wider mt-1">
                 Quizzes
-              </div>
-            </div>
-            <div className="w-px bg-purple-800/40" />
-            <div className="text-center">
-              <div className="text-3xl font-black text-amber-400">
-                {stats.totalPlayers}
-              </div>
-              <div className="text-sm text-purple-300/60 uppercase tracking-wider mt-1">
-                Players
               </div>
             </div>
           </div>
