@@ -2,11 +2,18 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { buildFlagQuestions, getQuestionsPerRound, type Quiz, type Question } from "@/lib/quizzes";
+import { buildFlagQuestions, buildImageQuestions, getQuestionsPerRound, type Quiz, type Question } from "@/lib/quizzes";
 
 const OPTION_LABELS = ["A", "B", "C", "D"];
 
 function resolveQuestions(quiz: Quiz): Question[] {
+  if (quiz.imagePool && quiz.imagePool.length > 0) {
+    return buildImageQuestions(
+      quiz.imagePool,
+      getQuestionsPerRound(quiz),
+      quiz.poolQuestion ?? "What is this?"
+    );
+  }
   if (quiz.flagPool && quiz.flagPool.length > 0) {
     return buildFlagQuestions(quiz.flagPool, getQuestionsPerRound(quiz));
   }

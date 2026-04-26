@@ -11,15 +11,22 @@ export interface FlagEntry {
   countryName: string;
 }
 
+export interface ImageEntry {
+  imageUrl: string;
+  name: string;
+}
+
 export interface Quiz {
   id: string;
   name: string;
   description: string;
   thumbnailUrl: string;
   category: string;
-  /** If set, questions are drawn randomly from flagPool each round */
+  /** If set, questions are drawn randomly from flagPool/imagePool each round */
   questionsPerRound?: number;
   flagPool?: FlagEntry[];
+  imagePool?: ImageEntry[];
+  poolQuestion?: string; // question text used when building from imagePool
   questions: Question[];
 }
 
@@ -45,6 +52,27 @@ export function buildFlagQuestions(pool: FlagEntry[], count: number): Question[]
       question: "Which country does this flag belong to?",
       options,
       correctAnswerIndex: options.indexOf(entry.countryName),
+    };
+  });
+}
+
+export function buildImageQuestions(
+  pool: ImageEntry[],
+  count: number,
+  question: string
+): Question[] {
+  const selected = shuffle(pool).slice(0, count);
+
+  return selected.map((entry) => {
+    const wrongPool = pool.filter((e) => e.imageUrl !== entry.imageUrl);
+    const wrongs = shuffle(wrongPool).slice(0, 3).map((e) => e.name);
+    const options = shuffle([entry.name, ...wrongs]);
+    return {
+      id: entry.imageUrl,
+      imageUrl: entry.imageUrl,
+      question,
+      options,
+      correctAnswerIndex: options.indexOf(entry.name),
     };
   });
 }
@@ -316,6 +344,38 @@ export const quizzes: Quiz[] = [
     category: "Geography",
     questionsPerRound: 14,
     flagPool: oceaniaFlagPool,
+    questions: [],
+  },
+  {
+    id: "dog-breeds",
+    name: "Dog Breeds",
+    description: "Can you identify the breed from the photo? 20 dogs, all different breeds.",
+    thumbnailUrl: "/quizzes/dog-breeds/golden-retriever.jpeg",
+    category: "Animals",
+    questionsPerRound: 20,
+    poolQuestion: "What breed is this dog?",
+    imagePool: [
+      { imageUrl: "/quizzes/dog-breeds/basset-hound.jpeg",                    name: "Basset Hound" },
+      { imageUrl: "/quizzes/dog-breeds/beagle.jpeg",                          name: "Beagle" },
+      { imageUrl: "/quizzes/dog-breeds/border-collie.jpeg",                   name: "Border Collie" },
+      { imageUrl: "/quizzes/dog-breeds/border-terrier.jpeg",                  name: "Border Terrier" },
+      { imageUrl: "/quizzes/dog-breeds/bulldog.jpeg",                         name: "Bulldog" },
+      { imageUrl: "/quizzes/dog-breeds/cavalier-king-charles-spaniel.jpeg",   name: "Cavalier King Charles Spaniel" },
+      { imageUrl: "/quizzes/dog-breeds/chihuahua.jpeg",                       name: "Chihuahua" },
+      { imageUrl: "/quizzes/dog-breeds/chow-chow.jpeg",                       name: "Chow Chow" },
+      { imageUrl: "/quizzes/dog-breeds/cocker-spaniel.jpg",                   name: "Cocker Spaniel" },
+      { imageUrl: "/quizzes/dog-breeds/german-shepherd.jpeg",                 name: "German Shepherd" },
+      { imageUrl: "/quizzes/dog-breeds/golden-retriever.jpeg",                name: "Golden Retriever" },
+      { imageUrl: "/quizzes/dog-breeds/great-dane.jpeg",                      name: "Great Dane" },
+      { imageUrl: "/quizzes/dog-breeds/labrador.jpg",                         name: "Labrador" },
+      { imageUrl: "/quizzes/dog-breeds/maltese.jpeg",                         name: "Maltese" },
+      { imageUrl: "/quizzes/dog-breeds/pomeranian.jpeg",                      name: "Pomeranian" },
+      { imageUrl: "/quizzes/dog-breeds/poodle.jpeg",                          name: "Poodle" },
+      { imageUrl: "/quizzes/dog-breeds/pug.jpg",                              name: "Pug" },
+      { imageUrl: "/quizzes/dog-breeds/rottweiler.jpg",                       name: "Rottweiler" },
+      { imageUrl: "/quizzes/dog-breeds/sausage-dog.jpg",                      name: "Sausage Dog" },
+      { imageUrl: "/quizzes/dog-breeds/st-bernard.jpeg",                      name: "St. Bernard" },
+    ],
     questions: [],
   },
 ];
