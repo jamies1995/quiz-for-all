@@ -113,9 +113,7 @@ export default function QuizPlayer({
               className={
                 isFlagQuiz
                   ? "max-h-44 w-auto drop-shadow-lg"
-                  : question.objectFit === "contain"
-                  ? "w-full object-contain max-h-64"
-                  : "w-full h-64 object-cover"
+                  : "w-full object-contain max-h-64"
               }
             />
           </div>
