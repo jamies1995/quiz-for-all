@@ -104,7 +104,7 @@ export default function QuizPlayer({
             className={`rounded-2xl overflow-hidden mb-8 border border-purple-800/40 flex items-center justify-center ${
               isFlagQuiz ? "bg-white" : "bg-purple-900/20"
             }`}
-            style={{ minHeight: isFlagQuiz ? "180px" : "240px" }}
+            style={{ minHeight: isFlagQuiz ? "180px" : "200px", maxHeight: isFlagQuiz ? undefined : "260px" }}
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
@@ -114,8 +114,8 @@ export default function QuizPlayer({
                 isFlagQuiz
                   ? "max-h-44 w-auto drop-shadow-lg"
                   : question.objectFit === "contain"
-                  ? "w-full object-contain max-h-72"
-                  : "w-full object-cover max-h-72"
+                  ? "w-full object-contain max-h-64"
+                  : "w-full h-64 object-cover"
               }
             />
           </div>
