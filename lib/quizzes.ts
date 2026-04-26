@@ -4,6 +4,7 @@ export interface Question {
   question: string;
   options: string[];
   correctAnswerIndex: number;
+  objectFit?: "cover" | "contain";
 }
 
 export interface FlagEntry {
@@ -14,6 +15,7 @@ export interface FlagEntry {
 export interface ImageEntry {
   imageUrl: string;
   name: string;
+  objectFit?: "cover" | "contain";
 }
 
 export interface Quiz {
@@ -73,6 +75,7 @@ export function buildImageQuestions(
       question,
       options,
       correctAnswerIndex: options.indexOf(entry.name),
+      objectFit: entry.objectFit,
     };
   });
 }
@@ -495,7 +498,7 @@ export const quizzes: Quiz[] = [
     imagePool: [
       { imageUrl: "/quizzes/cat-breeds/bengal.jpeg",                  name: "Bengal" },
       { imageUrl: "/quizzes/cat-breeds/birman.jpg",                   name: "Birman" },
-      { imageUrl: "/quizzes/cat-breeds/blue-british-shorthair.jpeg",  name: "Blue British Shorthair" },
+      { imageUrl: "/quizzes/cat-breeds/blue-british-shorthair.jpeg",  name: "Blue British Shorthair", objectFit: "contain" },
       { imageUrl: "/quizzes/cat-breeds/burmese.jpeg",                 name: "Burmese" },
       { imageUrl: "/quizzes/cat-breeds/devon-rex.jpg",                name: "Devon Rex" },
       { imageUrl: "/quizzes/cat-breeds/egyptian-mau.jpg",             name: "Egyptian Mau" },
@@ -507,10 +510,10 @@ export const quizzes: Quiz[] = [
       { imageUrl: "/quizzes/cat-breeds/ragdoll.jpeg",                 name: "Ragdoll" },
       { imageUrl: "/quizzes/cat-breeds/russian-blue.jpg",             name: "Russian Blue" },
       { imageUrl: "/quizzes/cat-breeds/savannah.jpeg",                name: "Savannah" },
-      { imageUrl: "/quizzes/cat-breeds/scottish-fold.jpg",            name: "Scottish Fold" },
+      { imageUrl: "/quizzes/cat-breeds/scottish-fold.jpg",            name: "Scottish Fold",           objectFit: "contain" },
       { imageUrl: "/quizzes/cat-breeds/siamese.jpeg",                 name: "Siamese" },
       { imageUrl: "/quizzes/cat-breeds/siberian.jpeg",                name: "Siberian" },
-      { imageUrl: "/quizzes/cat-breeds/sir-waff-les.jpeg",            name: "Sir Waff Les" },
+      { imageUrl: "/quizzes/cat-breeds/sir-waff-les.jpeg",            name: "Sir Waff Les",            objectFit: "contain" },
       { imageUrl: "/quizzes/cat-breeds/sphynx.jpg",                   name: "Sphynx" },
       { imageUrl: "/quizzes/cat-breeds/turkish-angora.jpg",           name: "Turkish Angora" },
     ],

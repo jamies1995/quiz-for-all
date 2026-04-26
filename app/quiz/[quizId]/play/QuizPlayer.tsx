@@ -99,7 +99,7 @@ export default function QuizPlayer({
             {question.question}
           </h2>
 
-          {/* Image — letterboxed for flags, cover for other quizzes */}
+          {/* Image */}
           <div
             className={`rounded-2xl overflow-hidden mb-8 border border-purple-800/40 flex items-center justify-center ${
               isFlagQuiz ? "bg-white" : "bg-purple-900/20"
@@ -110,7 +110,13 @@ export default function QuizPlayer({
             <img
               src={question.imageUrl}
               alt="Quiz question"
-              className={isFlagQuiz ? "max-h-44 w-auto drop-shadow-lg" : "w-full object-cover max-h-72"}
+              className={
+                isFlagQuiz
+                  ? "max-h-44 w-auto drop-shadow-lg"
+                  : question.objectFit === "contain"
+                  ? "w-full object-contain max-h-72"
+                  : "w-full object-cover max-h-72"
+              }
             />
           </div>
 
