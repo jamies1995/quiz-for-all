@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { getAllQuizzes, getQuestionsPerRound, type Quiz } from "@/lib/quizzes";
+import ResetButton from "./ResetButton";
 export default async function HomePage() {
   const quizzes = getAllQuizzes();
   const totalQuizzes = quizzes.length;
@@ -72,7 +73,10 @@ export default async function HomePage() {
       </section>
 
       <footer className="border-t border-purple-900/30 py-6 text-center text-sm text-purple-400/50">
-        Quiz for All &mdash; have fun!
+        <p>Quiz for All &mdash; have fun!</p>
+        <div className="mt-2">
+          <ResetButton />
+        </div>
       </footer>
     </div>
   );
